@@ -1,6 +1,7 @@
 // EDIT ME
 const ClothingItem = require("../models/clothingItem");
 const {
+  SUCCESS,
   VALIDATION_ERROR,
   DOCUMENT_NOT_FOUND_ERROR,
   CAST_ERROR,
@@ -9,7 +10,7 @@ const {
 // GET /items
 const getClothingItems = (req, res) => {
   ClothingItem.find({}) // would return all the clothingItems
-    .then((clothingItems) => res.status(200).send(clothingItems))
+    .then((clothingItems) => res.status(200).send({ clothingItems }))
     .catch((err) => {
       console.error(err);
       return res.status(500).send({ message: err.message });
@@ -19,6 +20,7 @@ const getClothingItems = (req, res) => {
 const createClothingItem = (req, res) => {
   console.log("req", req);
   console.log("req body", req.body);
+  console.log("req user", req.user);
   const { name, weather, imageUrl } = req.body;
   const userId = req.user._id;
   ClothingItem.create({
