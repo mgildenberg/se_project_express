@@ -31,6 +31,7 @@ const createClothingItem = (req, res) => {
   })
     .then((clothingItem) => {
       res.status(201).send({ clothingItem });
+      console.log({ clothingItem });
     })
     .catch((err) => {
       console.error(err);
@@ -44,27 +45,38 @@ const createClothingItem = (req, res) => {
 
 const deleteClothingItem = (req, res) => {
   const { clothingItemId } = req.params;
+  console.log("clothingItemId", clothingItemId);
 
   ClothingItem.findByIdAndDelete(clothingItemId)
-    .orFail()
+    .orFail(() => {
+      const error = new Error("No item found with the given ID");
+      error.name = "DocumentNotFoundError";
+      throw error;
+    })
+    // .orFail()
     .then((clothingItem) => {
-      res.status(SUCCESS).send(clothingItem);
+      res.status(SUCCESS).send({ clothingItem });
     })
     .catch((err) => {
-      console.error(err);
+      // console.error(err);
       console.log(err.name);
       if (err.name === "DocumentNotFoundError") {
+        console.log("It's a documentnotfounderror");
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: err.message });
       } else if (err.name === "CastError") {
-        return res.status(CAST_ERROR).send({ message: err.message });
+        return res.status(CAST_ERROR).send({ message: err.name + err.message });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(500).send({ message: err.name + err.message });
     });
 };
 
-module.exports = { getClothingItems, createClothingItem, deleteClothingItem };
-module.exports.createClothingItem = (req, res) => {
-  console.log(req.user._id); // _id will become accessible
+module.exports = {
+  getClothingItems,
+  createClothingItem,
+  deleteClothingItem,
 };
+// module.exports.createClothingItem = (req, res) => {
+//   console.log(req.user._id); // _id will become accessible
+// };
