@@ -3,9 +3,11 @@ const {
   getClothingItems,
   createClothingItem,
   deleteClothingItem,
+  getClothingItemById,
 } = require("../controllers/clothingItems");
 
 router.get("/", getClothingItems);
+router.get("/:itemId", getClothingItemById);
 router.post("/", createClothingItem);
 // router.get("/:itemId, getUser);
 router.delete("/:itemId", deleteClothingItem);
