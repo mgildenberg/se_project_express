@@ -1,15 +1,10 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  VALIDATION_ERROR,
-  DOCUMENT_NOT_FOUND_ERROR,
-  CAST_ERROR,
-} = require("../utils/errors");
+const { DOCUMENT_NOT_FOUND_ERROR, CAST_ERROR } = require("../utils/errors");
 
 // PUT /items/:itemId/likes — like an item
 // DELETE /items/:itemId/likes — unlike an item
 
 const updateLike = (req, res) => {
-  console.log(req);
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
