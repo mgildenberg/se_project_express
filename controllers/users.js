@@ -15,7 +15,7 @@ const getUsers = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: err.message });
+          .send({ message: `${err.name} | ${err.message}` });
       }
       return res.status(500).send({ message: err.message });
     });
@@ -40,19 +40,27 @@ const getUser = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
-    .orFail()
+    .orFail(() => {
+      const error = new Error(`No user found with the given ID: ${userId}`);
+      error.name = "UserNotFoundError";
+      throw error;
+    })
     .then((user) => {
-      res.status(200).send(user);
+      res.status(SUCCESS).send(user);
     })
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: err.message });
+          .send({ message: `${err.name} | ${err.message}` });
       } else if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
-          .send({ message: err.name + " | ID did not match expected format" });
+          .send({ message: `${err.name} | ID did not match expected format` });
+      } else if (err.name === "UserNotFoundError") {
+        return res
+          .status(404)
+          .send({ message: `${err.name} | ${err.message}` });
       }
       return res.status(500).send({ message: err.message });
     });

@@ -20,11 +20,13 @@ const updateLike = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: err.message });
+          .send({ message: `${err.name} | ${err.message}` });
       } else if (err.name === "CastError") {
-        return res.status(CAST_ERROR).send({ message: err.message });
+        return res
+          .status(CAST_ERROR)
+          .send({ message: `${err.name} | ${err.message}` });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(500).send({ message: `${err.name} | ${err.message}` });
     });
 };
 
@@ -47,7 +49,9 @@ const deleteLike = (req, res) => {
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: err.message });
       } else if (err.name === "CastError") {
-        return res.status(CAST_ERROR).send({ message: err.message });
+        return res
+          .status(CAST_ERROR)
+          .send({ message: `${err.name} | ${err.message}` });
       }
       return res.status(500).send({ message: err.message });
     });

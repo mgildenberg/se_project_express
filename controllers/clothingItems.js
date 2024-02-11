@@ -22,7 +22,7 @@ const getClothingItemById = (req, res) => {
   ClothingItem.findById(clothingItemId)
     .orFail(() => {
       const error = new Error(
-        " | No item found with the given ID: " + req.params.itemId,
+        `No item found with the given ID: ${req.params.itemId}`,
       );
       error.name = "DocumentNotFoundError";
       throw error;
@@ -31,6 +31,7 @@ const getClothingItemById = (req, res) => {
       res.status(SUCCESS).send({ clothingItem });
     })
     .catch((err) => {
+      console.error(err);
       console.log(err.name);
       if (err.name === "DocumentNotFoundError") {
         return res
@@ -39,7 +40,7 @@ const getClothingItemById = (req, res) => {
       } else if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
-          .send({ message: err.name + " | ID did not match expected format" });
+          .send({ message: `${err.name} | ID did not match expected format` });
       }
       return res.status(500).send({ message: err.name + err.message });
     });
@@ -62,7 +63,9 @@ const createClothingItem = (req, res) => {
       console.error(err);
       console.log(err.name);
       if (err.name === "ValidationError") {
-        return res.status(VALIDATION_ERROR).send({ message: err.message });
+        return res
+          .status(VALIDATION_ERROR)
+          .send({ message: `${err.name} | ${err.message}` });
       }
       return res.status(500).send({ message: err.message });
     });
@@ -77,8 +80,9 @@ const deleteClothingItem = (req, res) => {
   ClothingItem.findByIdAndRemove(clothingItemId)
     .orFail(() => {
       const noIdFoundError = new Error(
-        " No item found with the given ID: " + req.params.itemId,
+        `No item found with the given ID: ${req.params.itemId}`,
       );
+
       noIdFoundError.name = "NoIdFoundError";
       noIdFoundError.status = 404;
       throw noIdFoundError;
@@ -89,14 +93,15 @@ const deleteClothingItem = (req, res) => {
     })
     .catch((err) => {
       console.log(err.name);
+      console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: err.message });
+          .send({ message: `${err.name} | ${err.message}` });
       } else if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
-          .send({ message: err.name + " | ID did not match expected format" });
+          .send({ message: `${err.name} | ID did not match expected format` });
       } else if (err.name === "NoIdFoundError") {
         return res.status(404).send({ message: err.name + err.message });
       }
