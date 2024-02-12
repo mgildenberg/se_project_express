@@ -1,5 +1,4 @@
 // NON-ERRORS
-const SUCCESS = 200;
 const CREATED = 201;
 
 // ERRORS
@@ -14,7 +13,6 @@ const CONFLICT_ERROR = 409; // Conflict
 const INTERNAL_SERVER_ERROR = 500; // Internal Server Error
 
 module.exports = {
-  SUCCESS,
   CREATED,
   VALIDATION_ERROR,
   CAST_ERROR,

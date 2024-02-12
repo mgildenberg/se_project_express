@@ -2,8 +2,6 @@ const User = require("../models/user");
 const {
   VALIDATION_ERROR,
   CAST_ERROR,
-  DOCUMENT_NOT_FOUND_ERROR,
-  SUCCESS,
   CREATED,
   INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
@@ -14,11 +12,6 @@ const getUsers = (req, res) => {
     .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
-      // if (err.name === "DocumentNotFoundError") {
-      //   return res
-      //     .status(DOCUMENT_NOT_FOUND_ERROR)
-      //     .send({ message: `${err.name} | ${err.message}` });
-      // }
       return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
@@ -52,11 +45,6 @@ const getUser = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
-      // if (err.name === "DocumentNotFoundError") {
-      //   return res
-      //     .status(DOCUMENT_NOT_FOUND_ERROR)
-      //     .send({ message: `${err.name} | ${err.message}` });
-      // }
       if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)

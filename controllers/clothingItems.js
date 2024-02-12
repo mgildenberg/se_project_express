@@ -1,9 +1,7 @@
 const ClothingItem = require("../models/clothingItem");
 const {
   CREATED,
-  SUCCESS,
   VALIDATION_ERROR,
-  DOCUMENT_NOT_FOUND_ERROR,
   CAST_ERROR,
   INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
@@ -13,7 +11,7 @@ const getClothingItems = (req, res) => {
     .then((clothingItems) => res.send({ clothingItems }))
     .catch((err) => {
       console.error(err);
-      return res.status(500).send({ message: err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -24,9 +22,10 @@ const getClothingItemById = (req, res) => {
   ClothingItem.findById(clothingItemId)
     .orFail(() => {
       const error = new Error(
-        `No item found with the given ID: ${req.params.itemId}`,
+        ` No item found with the given ID: ${clothingItemId}`,
       );
-      error.name = "DocumentNotFoundError";
+      error.status = 404;
+      error.name = "ItemNotFoundError";
       throw error;
     })
     .then((clothingItem) => {
@@ -35,10 +34,8 @@ const getClothingItemById = (req, res) => {
     .catch((err) => {
       console.error(err);
       console.log(err.name);
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: err.message });
+      if (err.name === "ItemNotFoundError") {
+        return res.status(err.status).send({ message: err.message });
       }
       if (err.name === "CastError") {
         return res
@@ -82,7 +79,7 @@ const deleteClothingItem = (req, res) => {
   ClothingItem.findByIdAndRemove(clothingItemId)
     .orFail(() => {
       const noIdFoundError = new Error(
-        `No item found with the given ID: ${req.params.itemId}`,
+        ` No item found with the given ID: ${req.params.itemId}`,
       );
 
       noIdFoundError.name = "NoIdFoundError";
@@ -96,11 +93,6 @@ const deleteClothingItem = (req, res) => {
     .catch((err) => {
       console.log(err.name);
       console.error(err);
-      // if (err.name === "DocumentNotFoundError") {
-      //   return res
-      //     .status(DOCUMENT_NOT_FOUND_ERROR)
-      //     .send({ message: `${err.name} | ${err.message}` });
-      // }
       if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
