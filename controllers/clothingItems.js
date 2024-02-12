@@ -1,14 +1,16 @@
 const ClothingItem = require("../models/clothingItem");
 const {
+  CREATED,
   SUCCESS,
   VALIDATION_ERROR,
   DOCUMENT_NOT_FOUND_ERROR,
   CAST_ERROR,
+  INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
 
 const getClothingItems = (req, res) => {
   ClothingItem.find({}) // would return all the clothingItems
-    .then((clothingItems) => res.status(SUCCESS).send({ clothingItems }))
+    .then((clothingItems) => res.send({ clothingItems }))
     .catch((err) => {
       console.error(err);
       return res.status(500).send({ message: err.message });
@@ -28,7 +30,7 @@ const getClothingItemById = (req, res) => {
       throw error;
     })
     .then((clothingItem) => {
-      res.status(SUCCESS).send({ clothingItem });
+      res.send({ clothingItem });
     })
     .catch((err) => {
       console.error(err);
@@ -37,12 +39,15 @@ const getClothingItemById = (req, res) => {
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
           .send({ message: `${err.name} | ID did not match expected format` });
       }
-      return res.status(500).send({ message: err.name + err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: err.name + err.message });
     });
 };
 
@@ -56,7 +61,7 @@ const createClothingItem = (req, res) => {
     owner: userId,
   })
     .then((clothingItem) => {
-      res.status(201).send({ clothingItem });
+      res.status(CREATED).send({ clothingItem });
       console.log({ clothingItem });
     })
     .catch((err) => {
@@ -67,15 +72,12 @@ const createClothingItem = (req, res) => {
           .status(VALIDATION_ERROR)
           .send({ message: `${err.name} | ${err.message}` });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
 const deleteClothingItem = (req, res) => {
   const clothingItemId = req.params.itemId;
-  // console.log("in deleteClothingItem", clothingItemId);
-  // console.log("params of deleteClothingItem", req.params);
-  // console.log("body of deleteClothingItem", req.body);
 
   ClothingItem.findByIdAndRemove(clothingItemId)
     .orFail(() => {
@@ -89,23 +91,27 @@ const deleteClothingItem = (req, res) => {
     })
     // .orFail()
     .then((clothingItem) => {
-      res.status(SUCCESS).send({ clothingItem });
+      res.send({ clothingItem });
     })
     .catch((err) => {
       console.log(err.name);
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: `${err.name} | ${err.message}` });
-      } else if (err.name === "CastError") {
+      // if (err.name === "DocumentNotFoundError") {
+      //   return res
+      //     .status(DOCUMENT_NOT_FOUND_ERROR)
+      //     .send({ message: `${err.name} | ${err.message}` });
+      // }
+      if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
           .send({ message: `${err.name} | ID did not match expected format` });
-      } else if (err.name === "NoIdFoundError") {
-        return res.status(404).send({ message: err.name + err.message });
       }
-      return res.status(500).send({ message: err.name + err.message });
+      if (err.name === "NoIdFoundError") {
+        return res.status(err.status).send({ message: err.name + err.message });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: err.name + err.message });
     });
 };
 

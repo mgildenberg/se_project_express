@@ -1,5 +1,9 @@
 const ClothingItem = require("../models/clothingItem");
-const { DOCUMENT_NOT_FOUND_ERROR, CAST_ERROR } = require("../utils/errors");
+const {
+  DOCUMENT_NOT_FOUND_ERROR,
+  CAST_ERROR,
+  INTERNAL_SERVER_ERROR,
+} = require("../utils/errors");
 
 // PUT /items/:itemId/likes — like an item
 // DELETE /items/:itemId/likes — unlike an item
@@ -21,12 +25,15 @@ const updateLike = (req, res) => {
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: `${err.name} | ${err.message}` });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
           .send({ message: `${err.name} | ${err.message}` });
       }
-      return res.status(500).send({ message: `${err.name} | ${err.message}` });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: `${err.name} | ${err.message}` });
     });
 };
 
@@ -48,12 +55,13 @@ const deleteLike = (req, res) => {
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
           .send({ message: `${err.name} | ${err.message}` });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 

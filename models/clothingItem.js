@@ -12,7 +12,7 @@ const clothingSchema = new mongoose.Schema({
     type: String,
     required: [true, "The image URL is required."],
     validate: {
-      validator: function (value) {
+      validator: function validateURL(value) {
         return validator.isURL(value);
       },
       message: "You must enter a valid URL",

@@ -4,20 +4,22 @@ const {
   CAST_ERROR,
   DOCUMENT_NOT_FOUND_ERROR,
   SUCCESS,
+  CREATED,
+  INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
 
 // GET /users
 const getUsers = (req, res) => {
   User.find({}) // would return all the users
-    .then((users) => res.status(SUCCESS).send(users))
+    .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: `${err.name} | ${err.message}` });
-      }
-      return res.status(500).send({ message: err.message });
+      // if (err.name === "DocumentNotFoundError") {
+      //   return res
+      //     .status(DOCUMENT_NOT_FOUND_ERROR)
+      //     .send({ message: `${err.name} | ${err.message}` });
+      // }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -26,13 +28,13 @@ const createUser = (req, res) => {
 
   User.create({ name, avatar })
     .then((user) => {
-      res.status(201).send(user);
+      res.status(CREATED).send(user);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res.status(VALIDATION_ERROR).send({ message: err.message });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -43,26 +45,29 @@ const getUser = (req, res) => {
     .orFail(() => {
       const error = new Error(`No user found with the given ID: ${userId}`);
       error.name = "UserNotFoundError";
+      error.status = 404;
       throw error;
     })
     .then((user) => {
-      res.status(SUCCESS).send(user);
+      res.send(user);
     })
     .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: `${err.name} | ${err.message}` });
-      } else if (err.name === "CastError") {
+      // if (err.name === "DocumentNotFoundError") {
+      //   return res
+      //     .status(DOCUMENT_NOT_FOUND_ERROR)
+      //     .send({ message: `${err.name} | ${err.message}` });
+      // }
+      if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
           .send({ message: `${err.name} | ID did not match expected format` });
-      } else if (err.name === "UserNotFoundError") {
+      }
+      if (err.name === "UserNotFoundError") {
         return res
-          .status(404)
+          .status(err.status)
           .send({ message: `${err.name} | ${err.message}` });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
