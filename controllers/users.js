@@ -5,6 +5,11 @@ const {
   CREATED,
   INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
+const bcrypt = require("bcryptjs");
+
+const login = (req, res) => {
+  console.log(" hi hi login part ");
+};
 
 // GET /users
 const getUsers = (req, res) => {
@@ -17,18 +22,20 @@ const getUsers = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar })
-    .then((user) => {
-      res.status(CREATED).send(user);
-    })
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        return res.status(VALIDATION_ERROR).send({ message: err.message });
-      }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
-    });
+  bcrypt.hash(req.body.password, 10).then((hash) => {
+    User.create({ name, avatar, email, password: hash })
+      .then((user) => {
+        res.status(CREATED).send(user);
+      })
+      .catch((err) => {
+        if (err.name === "ValidationError") {
+          return res.status(VALIDATION_ERROR).send({ message: err.message });
+        }
+        return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      });
+  });
 };
 
 const getUser = (req, res) => {
@@ -59,4 +66,4 @@ const getUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getUser };
+module.exports = { getUsers, createUser, getUser, login };
