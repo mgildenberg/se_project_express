@@ -4,6 +4,7 @@ const {
   CAST_ERROR,
   CREATED,
   INTERNAL_SERVER_ERROR,
+  CONFLICT_ERROR,
 } = require("../utils/errors");
 const bcrypt = require("bcryptjs");
 
@@ -17,6 +18,7 @@ const getUsers = (req, res) => {
     .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
+      console.log(err.name);
       return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
@@ -32,8 +34,16 @@ const createUser = (req, res) => {
           .send({ email: user.email, avatar: user.avatar, name: user.name });
       })
       .catch((err) => {
+        console.error(err);
+        console.log(err.name);
         if (err.name === "ValidationError") {
           return res.status(VALIDATION_ERROR).send({ message: err.message });
+        }
+        if (err.code === 11000) {
+          //MongoDB duplicate error
+          return res
+            .status(CONFLICT_ERROR)
+            .send({ message: "Duplicate email error: Email already exists." });
         }
         return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
       });
@@ -54,6 +64,8 @@ const getUser = (req, res) => {
       res.send(user);
     })
     .catch((err) => {
+      console.error(err);
+      console.log(err.name);
       if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
