@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
 const cors = require("cors");
+mongoose.set("strictQuery", true); // doing this to suppress warning that comes up everytime
 
 const app = express();
 const { PORT = 3001 } = process.env;
