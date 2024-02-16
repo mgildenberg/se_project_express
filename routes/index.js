@@ -10,9 +10,13 @@ const {
   login,
 } = require("../controllers/users");
 
+const auth = require("../middlewares/auth");
+
+// router.use(auth);
+
 router.post("/signup", createUser);
 router.post("/signin", login);
-router.use("/users", userRouter);
+// router.use("/users", userRouter);
 router.use("/items", clothingItemsRouter);
 router.use("/items", likeRouter);
 

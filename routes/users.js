@@ -9,8 +9,8 @@ const {
 
 // router.get("/", getUsers);
 // router.get("/:userId", getUser);
-router.post("/signup", createUser);
-router.post("/signin", login);
+// router.post("/signup", createUser);
+// router.post("/signin", login);
 // router.post("/", createUser);
 
 module.exports = router;

@@ -5,11 +5,33 @@ const {
   CREATED,
   INTERNAL_SERVER_ERROR,
   CONFLICT_ERROR,
+  UNAUTHORIZED_ERROR,
 } = require("../utils/errors");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../utils/config");
+
+console.log(JWT_SECRET);
 
 const login = (req, res) => {
-  console.log(" hi hi login part ");
+  const { email, password } = req.body;
+  console.log(" hi hi login in controller");
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      console.log("we are in login");
+      console.log(user);
+      return res.send({ token });
+    })
+    .catch((err) => {
+      console.log("login error");
+      console.error(err);
+      console.log(err.name);
+      //return res.status(400).send({ message: err.message });
+      return res.status(400).send({ message: err.message });
+    });
 };
 
 // GET /users

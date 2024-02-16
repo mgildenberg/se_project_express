@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
 const cors = require("cors");
+
 mongoose.set("strictQuery", true); // doing this to suppress warning that comes up everytime
 
 const app = express();
@@ -18,11 +19,10 @@ app.use(cors());
 app.use(express.json());
 app.use((req, res, next) => {
   req.user = {
-    _id: "65c406d7af227166b2d7f0d3",
+    _id: "65cd49055bd53403399bf735",
   };
   next();
 });
-
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {
