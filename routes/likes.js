@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const { updateLike, deleteLike } = require("../controllers/likes");
+const auth = require("../middlewares/auth");
 
-router.put("/:itemId/likes", updateLike);
-router.delete("/:itemId/likes", deleteLike);
+router.put("/:itemId/likes", auth, updateLike);
+router.delete("/:itemId/likes", auth, deleteLike);
 
 module.exports = router;
 
