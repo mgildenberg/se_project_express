@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
   // get authorization from the header by destructuring
   const { authorization } = req.headers;
 
-  // console.log("we are in the auth function");
+  console.log("we are in the auth function");
 
   // check that the header exists and starts with 'Bearer '
   if (!authorization || !authorization.startsWith("Bearer ")) {

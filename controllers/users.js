@@ -6,6 +6,7 @@ const {
   INTERNAL_SERVER_ERROR,
   CONFLICT_ERROR,
   UNAUTHORIZED_ERROR,
+  DOCUMENT_NOT_FOUND_ERROR,
 } = require("../utils/errors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -37,6 +38,29 @@ const getUsers = (req, res) => {
     .catch((err) => {
       console.error(err);
       console.log(err.name);
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+    });
+};
+
+const getCurrentUser = (req, res) => {
+  console.log("we are in getCurrentUser");
+
+  // Extract user ID from req.user, set by auth middleware
+  const userId = req.user._id;
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res
+          .status(DOCUMENT_NOT_FOUND_ERROR)
+          .send({ message: "User not found" });
+      }
+      // Return user data, excluding password
+      const { email, name, avatar } = user;
+      res.send({ email, name, avatar });
+    })
+    .catch((err) => {
+      console.error(err);
       return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
@@ -98,4 +122,4 @@ const getUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getUser, login };
+module.exports = { getUsers, createUser, getUser, login, getCurrentUser };
