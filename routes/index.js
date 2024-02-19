@@ -13,15 +13,11 @@ const {
 
 const auth = require("../middlewares/auth");
 
-// router.use(auth);
-
 router.post("/signup", createUser);
 router.post("/signin", login);
 router.use("/items", auth, clothingItemsRouter);
 router.use("/items", auth, likeRouter);
 router.use("/users", auth, userRouter);
-// router.use("/users/me", auth, currentUserRouter);
-// router.use("/users", auth, getCurrentUser);
 
 router.use((req, res) => {
   res

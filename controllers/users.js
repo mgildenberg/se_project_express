@@ -65,6 +65,28 @@ const getCurrentUser = (req, res) => {
     });
 };
 
+const updateCurrentUser = (req, res) => {
+  console.log("we are in updateCurrentUser");
+
+  // Extract user ID from req.user, set by auth middleware
+  const userId = req.user._id;
+  const { name, avatar } = req.body;
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res
+          .status(DOCUMENT_NOT_FOUND_ERROR)
+          .send({ message: "User not found" });
+      }
+      res.send({ name, avatar });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+    });
+};
+
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -122,4 +144,11 @@ const getUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser, getUser, login, getCurrentUser };
+module.exports = {
+  getUsers,
+  createUser,
+  getUser,
+  login,
+  getCurrentUser,
+  updateCurrentUser,
+};
