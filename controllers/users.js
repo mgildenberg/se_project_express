@@ -15,20 +15,23 @@ const { JWT_SECRET } = require("../utils/config");
 const login = (req, res) => {
   const { email, password } = req.body;
   console.log(" hi hi login in controller");
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
-        expiresIn: "7d",
-      });
+  return (
+    User.findUserByCredentials(email, password)
+      // .select("+password")
+      .then((user) => {
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+          expiresIn: "7d",
+        });
 
-      return res.send({ token });
-    })
-    .catch((err) => {
-      console.error(err);
-      console.log(err.name);
-      //return res.status(400).send({ message: err.message });
-      return res.status(400).send({ message: err.message });
-    });
+        return res.send({ token });
+      })
+      .catch((err) => {
+        console.error(err);
+        console.log(err.name);
+        //return res.status(400).send({ message: err.message });
+        return res.status(400).send({ message: err.message });
+      })
+  );
 };
 
 // GET /users

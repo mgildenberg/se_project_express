@@ -76,34 +76,41 @@ const createClothingItem = (req, res) => {
 const deleteClothingItem = (req, res) => {
   const clothingItemId = req.params.itemId;
 
-  ClothingItem.findByIdAndRemove(clothingItemId)
+  ClothingItem.findById(clothingItemId)
     .orFail(() => {
       const noIdFoundError = new Error(
-        ` No item found with the given ID: ${req.params.itemId}`,
+        `No item found with the given ID: ${req.params.itemId}`,
       );
-
       noIdFoundError.name = "NoIdFoundError";
       noIdFoundError.status = 404;
       throw noIdFoundError;
     })
-    // .orFail()
     .then((clothingItem) => {
-      res.send({ clothingItem });
+      if (String(clothingItem.owner) === String(req.user._id)) {
+        return ClothingItem.findByIdAndRemove(clothingItemId).then(() => {
+          res.send({ message: "Item deleted" });
+        });
+      } else {
+        const wrongUserError = new Error("Cannot delete another user's item");
+        wrongUserError.name = "WrongUserError";
+        wrongUserError.status = 403;
+        throw wrongUserError;
+      }
     })
     .catch((err) => {
-      console.log(err.name);
       console.error(err);
       if (err.name === "CastError") {
         return res
           .status(CAST_ERROR)
           .send({ message: `${err.name} | ID did not match expected format` });
       }
+      if (err.name === "WrongUserError") {
+        return res.status(err.status).send({ message: err.name + err.message });
+      }
       if (err.name === "NoIdFoundError") {
         return res.status(err.status).send({ message: err.name + err.message });
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: err.name + err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
