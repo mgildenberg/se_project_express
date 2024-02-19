@@ -68,18 +68,21 @@ const getCurrentUser = (req, res) => {
 const updateCurrentUser = (req, res) => {
   console.log("we are in updateCurrentUser");
 
-  // Extract user ID from req.user, set by auth middleware
   const userId = req.user._id;
   const { name, avatar } = req.body;
+  const update = { name: name, avatar: avatar };
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
+  User.findOneAndUpdate({ _id: userId }, update, {
+    new: true,
+    runValidators: true,
+  })
+    .then((updatedUser) => {
+      if (!updatedUser) {
         return res
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: "User not found" });
       }
-      res.send({ name, avatar });
+      res.send({ name: updatedUser.name, avatar: updatedUser.avatar });
     })
     .catch((err) => {
       console.error(err);
