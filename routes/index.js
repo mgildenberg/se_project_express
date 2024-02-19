@@ -3,13 +3,7 @@ const { DOCUMENT_NOT_FOUND_ERROR } = require("../utils/errors");
 const userRouter = require("./users");
 const clothingItemsRouter = require("./clothingItems");
 const likeRouter = require("./likes");
-const {
-  getUsers,
-  createUser,
-  getUser,
-  login,
-  getCurrentUser,
-} = require("../controllers/users");
+const { createUser, login } = require("../controllers/users");
 
 const auth = require("../middlewares/auth");
 

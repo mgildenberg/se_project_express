@@ -37,5 +37,5 @@ module.exports = (req, res, next) => {
   req.user = payload;
 
   // sending the request to the next middleware
-  next();
+  return next();
 };

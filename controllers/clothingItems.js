@@ -90,12 +90,11 @@ const deleteClothingItem = (req, res) => {
         return ClothingItem.findByIdAndRemove(clothingItemId).then(() => {
           res.send({ message: "Item deleted" });
         });
-      } else {
-        const wrongUserError = new Error("Cannot delete another user's item");
-        wrongUserError.name = "WrongUserError";
-        wrongUserError.status = 403;
-        throw wrongUserError;
       }
+      const wrongUserError = new Error("Cannot delete another user's item");
+      wrongUserError.name = "WrongUserError";
+      wrongUserError.status = 403;
+      throw wrongUserError;
     })
     .catch((err) => {
       console.error(err);
