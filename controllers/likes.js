@@ -1,8 +1,8 @@
 const ClothingItem = require("../models/clothingItem");
 const {
   DOCUMENT_NOT_FOUND_ERROR,
-  CAST_ERROR,
   INTERNAL_SERVER_ERROR,
+  VALIDATION_ERROR,
 } = require("../utils/errors");
 
 // PUT /items/:itemId/likes — like an item
@@ -28,7 +28,7 @@ const updateLike = (req, res) => {
       }
       if (err.name === "CastError") {
         return res
-          .status(CAST_ERROR)
+          .status(VALIDATION_ERROR)
           .send({ message: `${err.name} | ${err.message}` });
       }
       return res
@@ -58,7 +58,7 @@ const deleteLike = (req, res) => {
       }
       if (err.name === "CastError") {
         return res
-          .status(CAST_ERROR)
+          .status(VALIDATION_ERROR)
           .send({ message: `${err.name} | ${err.message}` });
       }
       return res
