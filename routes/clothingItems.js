@@ -14,5 +14,3 @@ router.post("/", auth, createClothingItem);
 router.delete("/:itemId", auth, deleteClothingItem);
 
 module.exports = router;
-
-// router.get("/users/:userId", () => console.log("GET users"));

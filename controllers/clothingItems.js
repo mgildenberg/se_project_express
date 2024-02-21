@@ -2,7 +2,6 @@ const ClothingItem = require("../models/clothingItem");
 const {
   CREATED,
   VALIDATION_ERROR,
-  CAST_ERROR,
   INTERNAL_SERVER_ERROR,
 } = require("../utils/errors");
 
@@ -11,7 +10,9 @@ const getClothingItems = (req, res) => {
     .then((clothingItems) => res.send({ clothingItems }))
     .catch((err) => {
       console.error(err);
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -39,12 +40,12 @@ const getClothingItemById = (req, res) => {
       }
       if (err.name === "CastError") {
         return res
-          .status(CAST_ERROR)
+          .status(VALIDATION_ERROR)
           .send({ message: `${err.name} | ID did not match expected format` });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: err.name + err.message });
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -69,7 +70,9 @@ const createClothingItem = (req, res) => {
           .status(VALIDATION_ERROR)
           .send({ message: `${err.name} | ${err.message}` });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -100,7 +103,7 @@ const deleteClothingItem = (req, res) => {
       console.error(err);
       if (err.name === "CastError") {
         return res
-          .status(CAST_ERROR)
+          .status(VALIDATION_ERROR)
           .send({ message: `${err.name} | ID did not match expected format` });
       }
       if (err.name === "WrongUserError") {
@@ -109,7 +112,9 @@ const deleteClothingItem = (req, res) => {
       if (err.name === "NoIdFoundError") {
         return res.status(err.status).send({ message: err.name + err.message });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 

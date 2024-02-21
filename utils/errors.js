@@ -3,7 +3,6 @@ const CREATED = 201;
 
 // ERRORS
 const VALIDATION_ERROR = 400; // Bad Request
-const CAST_ERROR = 400; // Bad Request
 const DOCUMENT_NOT_FOUND_ERROR = 404; // Not Found
 const MONGOOSE_ERROR = 500; // Internal Server Error
 const UNAUTHORIZED_ERROR = 401; // Unauthorized
@@ -15,7 +14,6 @@ const INTERNAL_SERVER_ERROR = 500; // Internal Server Error
 module.exports = {
   CREATED,
   VALIDATION_ERROR,
-  CAST_ERROR,
   DOCUMENT_NOT_FOUND_ERROR,
   MONGOOSE_ERROR,
   UNAUTHORIZED_ERROR,
