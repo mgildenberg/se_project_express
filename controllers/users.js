@@ -13,6 +13,7 @@ const { JWT_SECRET } = require("../utils/config");
 
 const login = (req, res) => {
   const { email, password } = req.body;
+  console.log("backend", { email, password });
 
   // Looks for missing fields in request and returns error before findUserByCredentials is run
   if (!email || !password) {
@@ -52,8 +53,8 @@ const getCurrentUser = (req, res) => {
           .send({ message: "User not found" });
       }
       // Return user data, excluding password
-      const { email, name, avatar } = user;
-      return res.send({ email, name, avatar });
+      const { email, name, avatar, _id } = user;
+      return res.send({ email, name, avatar, _id });
     })
     .catch((err) => {
       console.error(err);
