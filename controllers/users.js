@@ -65,6 +65,8 @@ const getCurrentUser = (req, res) => {
 };
 
 const updateCurrentUser = (req, res) => {
+  console.log("in updateCurrentUser");
+  console.log(req);
   const userId = req.user._id;
   const { name, avatar } = req.body;
   const update = { name, avatar };

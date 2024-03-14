@@ -9,6 +9,7 @@ module.exports = (req, res, next) => {
 
   // check that the header exists and starts with 'Bearer '
   if (!authorization || !authorization.startsWith("Bearer ")) {
+    console.log("something here 1");
     return res
       .status(UNAUTHORIZED_ERROR)
       .send({ message: "Authorization required" });
@@ -24,6 +25,9 @@ module.exports = (req, res, next) => {
     payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
     // otherwise, return an error
+    console.log("something here 2");
+    console.log("token", token);
+    console.log("JWT_SECRET", JWT_SECRET);
     return res
       .status(UNAUTHORIZED_ERROR)
       .send({ message: "Authorization required" });
