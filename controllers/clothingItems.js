@@ -59,8 +59,7 @@ const createClothingItem = (req, res) => {
     owner: userId,
   })
     .then((clothingItem) => {
-      res.status(CREATED).send({ clothingItem });
-      console.log({ clothingItem });
+      res.status(CREATED).send(clothingItem);
     })
     .catch((err) => {
       console.error(err);

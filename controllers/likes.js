@@ -16,10 +16,9 @@ const updateLike = (req, res) => {
   )
     .orFail()
     .then((like) => {
-      res.send({ data: like });
+      res.send(like);
     })
     .catch((err) => {
-      console.error(err);
       console.log(err.name);
       if (err.name === "DocumentNotFoundError") {
         return res
@@ -46,7 +45,7 @@ const deleteLike = (req, res) => {
   )
     .orFail()
     .then((like) => {
-      res.send({ data: like });
+      res.send(like);
     })
     .catch((err) => {
       console.error(err);

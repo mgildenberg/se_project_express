@@ -13,7 +13,7 @@ const { JWT_SECRET } = require("../utils/config");
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  console.log("backend", { email, password });
+  // console.log("backend", { email, password });
 
   // Looks for missing fields in request and returns error before findUserByCredentials is run
   if (!email || !password) {
