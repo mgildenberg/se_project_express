@@ -66,7 +66,7 @@ const getCurrentUser = (req, res) => {
 
 const updateCurrentUser = (req, res) => {
   console.log("in updateCurrentUser");
-  console.log(req);
+  console.log(req.user);
   const userId = req.user._id;
   const { name, avatar } = req.body;
   const update = { name, avatar };
@@ -81,7 +81,12 @@ const updateCurrentUser = (req, res) => {
           .status(DOCUMENT_NOT_FOUND_ERROR)
           .send({ message: "User not found" });
       }
-      return res.send({ name: updatedUser.name, avatar: updatedUser.avatar });
+      return res.send({
+        name: updatedUser.name,
+        avatar: updatedUser.avatar,
+        _id: userId,
+        email: updatedUser.email,
+      });
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
