@@ -9,6 +9,8 @@ const {
   DOCUMENT_NOT_FOUND_ERROR,
   UNAUTHORIZED_ERROR,
 } = require("../utils/errors");
+const NotFoundError = require("../errors/not-found-error");
+const BadRequestError = require("../errors/bad-request-error");
 const { JWT_SECRET } = require("../utils/config");
 
 const login = (req, res) => {
@@ -48,9 +50,12 @@ const getCurrentUser = (req, res) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        return res
-          .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: "User not found" });
+        // Sprint 15
+        throw new NotFoundError("No user with matching ID found");
+        // Sprint 15
+        // return res
+        //   .status(DOCUMENT_NOT_FOUND_ERROR)
+        //   .send({ message: "User not found" });
       }
       // Return user data, excluding password
       const { email, name, avatar, _id } = user;
@@ -90,12 +95,15 @@ const updateCurrentUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(VALIDATION_ERROR).send({ message: err.message });
+        next(new BadRequestError(err.message));
+        // return res.status(VALIDATION_ERROR).send({ message: err.message });
+        // if (err.name === "ValidationError") {
+        //   next(new BadRequestError(err.message));
+        //   // return res.status(VALIDATION_ERROR).send({ message: err.message });
+        // }
+      } else {
+        next(err);
       }
-      console.error(err);
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -113,7 +121,8 @@ const createUser = (req, res) => {
         console.error(err);
         console.log(err.name);
         if (err.name === "ValidationError") {
-          return res.status(VALIDATION_ERROR).send({ message: err.message });
+          next(new BadRequestError(err.message));
+          // return res.status(VALIDATION_ERROR).send({ message: err.message });
         }
         if (err.code === 11000) {
           return res
