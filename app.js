@@ -3,8 +3,9 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const mainRouter = require("./routes/index");
 // const errorHandler = require("./middlewares/error-handler");
-const { errorHandler } = require("./middlewares/error-handler");
+const { errorHandler } = require("./middlewares/errorHandler");
 const { errors } = require("celebrate");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 mongoose.set("strictQuery", true); // doing this to suppress warning that comes up everytime
 
@@ -21,7 +22,11 @@ mongoose
 app.use(cors());
 app.use(express.json());
 
+app.use(requestLogger);
+
 app.use("/", mainRouter);
+
+app.use(errorLogger); // enabling the error logger
 
 //Sprint 15 addition
 app.use(errors());

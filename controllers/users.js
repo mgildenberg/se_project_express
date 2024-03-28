@@ -9,8 +9,11 @@ const {
   DOCUMENT_NOT_FOUND_ERROR,
   UNAUTHORIZED_ERROR,
 } = require("../utils/errors");
-const NotFoundError = require("../errors/not-found-error");
-const BadRequestError = require("../errors/bad-request-error");
+const NotFoundError = require("../errors/NotFoundError");
+const BadRequestError = require("../errors/BadRequestError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const ConflictError = require("../errors/ConflictError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 const { JWT_SECRET } = require("../utils/config");
 
 const login = (req, res) => {
@@ -19,9 +22,10 @@ const login = (req, res) => {
 
   // Looks for missing fields in request and returns error before findUserByCredentials is run
   if (!email || !password) {
-    return res
-      .status(VALIDATION_ERROR)
-      .send({ message: "Incorrect email or password" });
+    throw new UnauthorizedError("Incorrect email or password");
+    // return res
+    //   .status(VALIDATION_ERROR)
+    //   .send({ message: "Incorrect email or password" });
   }
 
   return User.findUserByCredentials(email, password)
@@ -33,13 +37,16 @@ const login = (req, res) => {
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
-        return res.status(UNAUTHORIZED_ERROR).send({ message: err.message });
+        // return res.status(UNAUTHORIZED_ERROR).send({ message: err.message });
+        next(new UnauthorizedError("Incorrect email or password"));
+      } else {
+        console.error(err);
+        console.log(err.name);
+        next(err);
       }
-      console.error(err);
-      console.log(err.name);
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      // return res
+      //   .status(INTERNAL_SERVER_ERROR)
+      //   .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -63,9 +70,10 @@ const getCurrentUser = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(err);
+      // return res
+      //   .status(INTERNAL_SERVER_ERROR)
+      //   .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -125,13 +133,18 @@ const createUser = (req, res) => {
           // return res.status(VALIDATION_ERROR).send({ message: err.message });
         }
         if (err.code === 11000) {
-          return res
-            .status(CONFLICT_ERROR)
-            .send({ message: "Duplicate email error: Email already exists." });
+          next(
+            new ConflictError("Duplicate email error: Email already exists."),
+          );
+          // return res
+          //   .status(CONFLICT_ERROR)
+          //   .send({ message: "Duplicate email error: Email already exists." });
         }
-        return res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error has occurred on the server." });
+
+        next(err);
+        // return res
+        //   .status(INTERNAL_SERVER_ERROR)
+        //   .send({ message: "An error has occurred on the server." });
       });
   });
 };

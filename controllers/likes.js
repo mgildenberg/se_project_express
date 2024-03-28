@@ -4,6 +4,11 @@ const {
   INTERNAL_SERVER_ERROR,
   VALIDATION_ERROR,
 } = require("../utils/errors");
+const NotFoundError = require("../errors/NotFoundError");
+const BadRequestError = require("../errors/BadRequestError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const ConflictError = require("../errors/ConflictError");
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
 // PUT /items/:itemId/likes — like an item
 // DELETE /items/:itemId/likes — unlike an item
@@ -21,18 +26,20 @@ const updateLike = (req, res) => {
     .catch((err) => {
       console.log(err.name);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: `${err.name} | ${err.message}` });
+        next(new NotFoundError("Item not found"));
+        // return res
+        //   .status(DOCUMENT_NOT_FOUND_ERROR)
+        //   .send({ message: `${err.name} | ${err.message}` });
       }
       if (err.name === "CastError") {
         return res
           .status(VALIDATION_ERROR)
           .send({ message: `${err.name} | ${err.message}` });
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+      next(err);
+      // return res
+      //   .status(INTERNAL_SERVER_ERROR)
+      //   .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -51,18 +58,22 @@ const deleteLike = (req, res) => {
       console.error(err);
       console.log(err.name);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(DOCUMENT_NOT_FOUND_ERROR)
-          .send({ message: err.message });
+        next(new NotFoundError("Item not found"));
+        // return res
+        //   .status(DOCUMENT_NOT_FOUND_ERROR)
+        //   .send({ message: err.message });
       }
       if (err.name === "CastError") {
-        return res
-          .status(VALIDATION_ERROR)
-          .send({ message: `${err.name} | ${err.message}` });
+        next(new BadRequestError("Incorrect or invalid data"));
+        // return res
+        //   .status(VALIDATION_ERROR)
+        //   .send({ message: `${err.name} | ${err.message}` });
       }
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+
+      next(err);
+      // return res
+      //   .status(INTERNAL_SERVER_ERROR)
+      //   .send({ message: "An error has occurred on the server." });
     });
 };
 
