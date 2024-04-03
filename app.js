@@ -7,6 +7,9 @@ const mainRouter = require("./routes/index");
 const { errorHandler } = require("./middlewares/errorHandler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
+require("dotenv").config();
+console.log(process.env.NODE_ENV); // production
+
 mongoose.set("strictQuery", true); // doing this to suppress warning that comes up everytime
 
 const app = express();
