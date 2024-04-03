@@ -56,21 +56,6 @@ const userLoginValidation = celebrate({
   }),
 });
 
-// idk
-// const userClothingAccess = celebrate({
-//   body: Joi.object()
-//     .keys({ id: Joi.string.alphanum().length(24).required() })
-//     .messages({
-//       "string.empty": "The ID must be filled in",
-//       "string.hex": "The ID must be a valid hexadecimal",
-//     }),
-//   //   4. User and clothing item IDs when they are accessed
-
-//   // IDs must be a hexadecimal value length of 24 characters.
-
-//   // i found string.hex for the Joi validation error
-// });
-
 // copied from Dot https://discord.com/channels/1078663743568883783/1222324978842734712/1222326382399328317
 const userIdValidation = celebrate({
   params: Joi.object().keys({
