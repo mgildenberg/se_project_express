@@ -1,10 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { errors } = require("celebrate");
 const mainRouter = require("./routes/index");
 // const errorHandler = require("./middlewares/error-handler");
 const { errorHandler } = require("./middlewares/errorHandler");
-const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 mongoose.set("strictQuery", true); // doing this to suppress warning that comes up everytime
@@ -28,13 +28,9 @@ app.use("/", mainRouter);
 
 app.use(errorLogger); // enabling the error logger
 
-//Sprint 15 addition
 app.use(errors());
-//Sprint 15 addition
 
-// Sprint 15 addition
 app.use(errorHandler);
-// Sprint 15
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

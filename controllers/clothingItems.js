@@ -1,14 +1,7 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  CREATED,
-  VALIDATION_ERROR,
-  INTERNAL_SERVER_ERROR,
-} = require("../utils/errors");
 const NotFoundError = require("../errors/NotFoundError");
 const BadRequestError = require("../errors/BadRequestError");
 const ForbiddenError = require("../errors/ForbiddenError");
-const ConflictError = require("../errors/ConflictError");
-const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const getClothingItems = (req, res, next) => {
   ClothingItem.find({}) // would return all the clothingItems
@@ -29,7 +22,7 @@ const createClothingItem = (req, res, next) => {
     owner: userId,
   })
     .then((clothingItem) => {
-      res.status(CREATED).send(clothingItem);
+      res.status(201).send(clothingItem);
     })
     .catch((err) => {
       console.error(err);
@@ -58,9 +51,7 @@ const getClothingItemById = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       console.log(err.name);
-      // if (err.name === "ItemNotFoundError") {
-      //   return res.status(err.status).send({ message: err.message });
-      // }
+
       if (err.name === "CastError") {
         next(new BadRequestError("Incorrect or invalid data"));
       }
