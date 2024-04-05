@@ -41,6 +41,15 @@ const createClothingItemValidation = celebrate({
       "string.empty": 'The "imageUrl" field must be filled in',
       "string.uri": 'the "imageUrl" field must be a valid url',
     }),
+
+    weather: Joi.string()
+      .required()
+      .any()
+      .valid("cold", "hot", "warm")
+      .messages({
+        "string.empty": 'The "name" field must be filled in',
+        "any.only": "Accepted values are only cold, warm, or hot",
+      }),
   }),
 });
 
