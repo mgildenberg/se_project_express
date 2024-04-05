@@ -56,24 +56,26 @@ const userLoginValidation = celebrate({
   }),
 });
 
-// copied from Dot https://discord.com/channels/1078663743568883783/1222324978842734712/1222326382399328317
-const userIdValidation = celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().required().hex().length(24).messages({
-      "string.empty": "The 'userId' field must be filled in",
-      "string.length": "The 'userId' field must have a length of 24 characters",
-      "string.hex": "The 'userId' must be a hexadecimal string",
+const userUpdateValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30).messages({
+      "string.empty": 'The "name" field must be filled in',
+      "string.min": 'The minimum length of the "name" field is 2',
+      "string.max": 'The maximum length of the "name" field is 30',
+    }),
+    avatar: Joi.string().required().custom(validateURL).messages({
+      "string.empty": 'The "avatar" field must be filled in',
+      "string.uri": 'the "avatar" field must be a valid url',
     }),
   }),
 });
 
 const clothingIdValidation = celebrate({
   params: Joi.object().keys({
-    clothingId: Joi.string().required().hex().length(24).messages({
-      "string.empty": "The 'clothingId' field must be filled in",
-      "string.length":
-        "The 'clothingId' field must have a length of 24 characters",
-      "string.hex": "The 'clothingId' must be a hexadecimal string",
+    itemId: Joi.string().required().hex().length(24).messages({
+      "string.empty": "The 'itemId' field must be filled in",
+      "string.length": "The 'itemId' field must have a length of 24 characters",
+      "string.hex": "The 'itemId' must be a hexadecimal string",
     }),
   }),
 });
@@ -82,7 +84,6 @@ module.exports = {
   userRegistrationValidation,
   createClothingItemValidation,
   userLoginValidation,
-  // userClothingAccess,
-  userIdValidation,
+  userUpdateValidation,
   clothingIdValidation,
 };

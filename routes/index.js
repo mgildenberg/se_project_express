@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { DOCUMENT_NOT_FOUND_ERROR } = require("../utils/errors");
+const NotFoundError = require("../errors/NotFoundError");
 const userRouter = require("./users");
 const clothingItemsRouter = require("./clothingItems");
 const likeRouter = require("./likes");
@@ -20,10 +20,8 @@ router.use("/items", clothingItemsRouter);
 router.use("/items", likeRouter);
 router.use("/users", userRouter);
 
-router.use((req, res) => {
-  res
-    .status(DOCUMENT_NOT_FOUND_ERROR)
-    .send({ message: "Requested resource not found" });
+router.use((req, res, next) => {
+  next(new NotFoundError("Requested resource not found"));
 });
 
 module.exports = router;
